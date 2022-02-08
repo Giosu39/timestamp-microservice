@@ -29,24 +29,34 @@ app.get("/api", function (req, res) {
 
 app.get("/api/:date_string", function (req, res) {
   var date_string = req.params.date_string;
+  var dateObject = new Date(date_string);
 
-  var unixRegex = /^\d+$/;
-  if (unixRegex.test(date_string)) {
-    var unixTimestamp = parseInt(date_string);
-    var milliseconds = unixTimestamp * 1000;
-    var datum = new Date(unixTimestamp);
-    res.json({ unix: unixTimestamp, utc: datum.toUTCString() });
+  if (Object.prototype.toString.call(dateObject) === "[object Date]") {
+    // it is a date
+    if (isNaN(dateObject)) {
+      // date object is not valid, check if it is unix timestamp
+      var unixRegex = /^\d+$/;
+      if (unixRegex.test(date_string)) {
+        var unixTimestamp = parseInt(date_string);
+        var milliseconds = unixTimestamp * 1000;
+        var datum = new Date(unixTimestamp);
+        res.json({ unix: unixTimestamp, utc: datum.toUTCString() });
+      }
+      
+      
+    } else {
+      // date object is valid
+      var year = date_string.slice(0, 4);
+      var month = date_string.slice(5, 7);
+      var day = date_string.slice(8);
+      var datum = new Date(year, month - 1, day);
+      res.json({ unix: dateObject.getTime(), utc: dateObject.toUTCString() });
+    }
+  } else {
+    // not a date object
+    console.log("not a date object")
   }
 
-  var dateRegex = /^\d\d\d\d\-\d\d\-\d\d$/;
-  if (dateRegex.test(date_string)) {
-    var year = date_string.slice(0, 4);
-    var month = date_string.slice(5, 7);
-    var day = date_string.slice(8);
-    var datum = new Date(year, month - 1, day);
-    res.json({ unix: datum.getTime(), utc: datum.toUTCString() });
-  }
-  
   res.json({ error: "Invalid Date" });
 });
 
