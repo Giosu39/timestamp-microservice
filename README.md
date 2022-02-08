@@ -1,2 +1,2 @@
-# timestamp-microservice
-"Timestamp Microservice", a challenge for freeCodeCamp.org
+
+# [Timestamp Microservice](https://www.freecodecamp.org/learn/apis-and-microservices/apis-and-microservices-projects/timestamp-microservice)
